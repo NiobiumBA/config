@@ -1,0 +1,101 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/nemotron-3-ultra-free",
+  "fallbacks": [
+    "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+    "proxyapi/deepseek-v4-flash"
+  ],
+  "cooldown_seconds": 300,
+  "websearch": {
+    "provider": "random"
+  },
+  "agents": {
+    "researcher": {
+      "description": "Answers questions and performs complex internet searches",
+      "mode": "primary",
+      "model": "opencode/nemotron-3-ultra-free",
+      "fallbacks": [
+        "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+        "proxyapi/deepseek-v4-flash"
+      ],
+      "system": "You are a research agent that answers questions and performs complex internet searches. Use websearch and webfetch tools to find current information. Always cite your sources with URLs. Provide comprehensive, well-structured answers.",
+      "permissions": [
+        { "action": "websearch", "resource": "*", "effect": "allow" },
+        { "action": "webfetch", "resource": "*", "effect": "allow" },
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "glob", "resource": "*", "effect": "allow" },
+        { "action": "grep", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "deny" },
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "write", "resource": "*", "effect": "deny" },
+        { "action": "patch", "resource": "*", "effect": "deny" }
+      ]
+    }
+  },
+  "default_agent": "researcher",
+  "providers": {
+    "proxyapi": {
+      "name": "ProxyAPI",
+      "env": ["PROXYAPI_API_KEY"],
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://api.proxyapi.ru/v1",
+        "apiKey": "sk-AKhJv1SkGRdAxBCHs7sM7HucZahF43eW"
+      },
+      "models": {
+        "ling-3.0-flash": {
+          "name": "Ling 3.0 Flash",
+          "modelID": "inclusionai/ling-3.0-flash",
+          "capabilities": {
+            "tools": true,
+            "input": ["text"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          },
+          "settings": {
+            "reasoningEffort": "high"
+          },
+          "variants": [
+            {
+              "id": "balanced",
+              "settings": { "reasoningEffort": "medium" }
+            },
+            {
+              "id": "fast",
+              "settings": { "reasoningEffort": "minimal" }
+            }
+          ]
+        },
+        "deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash (V4.1-Flash-1017)",
+          "modelID": "deepseek/deepseek-v4-flash",
+          "capabilities": {
+            "tools": true,
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 1000000,
+            "output": 393216
+          }
+        },
+        "muse-ember": {
+          "name": "Muse Ember",
+          "modelID": "meta/muse-ember",
+          "capabilities": {
+            "tools": true,
+            "input": ["text", "image", "video", "audio"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 1048576,
+            "output": 944000
+          }
+        }
+      }
+    }
+  }
+}
